@@ -1,11 +1,14 @@
 const express = require("express");
 const { connecter } = require("./db/connect");
+const routesUtilisateur = require("./route/utilisateur");
 const app = express();
 
-//création de point de terminaison
-app.get("/", (req, res) => {
-    console.log("Salut les filles!")
-});
+//middleware qui permet de convertir les input encodés a la req
+app.use(express.urlencoded({extend : true}));
+//converti en jason
+app.use(express.json());
+
+app.use("/api/v1", routesUtilisateur)
 
 connecter("mongodb://localhost:27017/", (erreur) => {
     if(erreur){
@@ -13,7 +16,6 @@ connecter("mongodb://localhost:27017/", (erreur) => {
       process.exit(-1);  
     }else{
         console.log("Connexion avec la base de données établie");
-        //création du serveur
         app.listen(3000);
         console.log("Attente des requêtes au port 3000");
     }
