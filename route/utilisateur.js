@@ -6,6 +6,6 @@ router.route("/utilisateurs").post(ajouterUtilisateur);
 router.route("/utilisateurs").get(getTousUtilisateurs);
 router.route("/utilisateurs/:id").get(getUtilisateur);
 router.route("/utilisateurs/:id").put(modifierUtilisateur);
-router.route("/utilisateurs/:id").delete(supprimerUtilisateur); 
+router.route("/utilisateurs/:id").delete(supprimerUtilisateur);
 
 module.exports = router;

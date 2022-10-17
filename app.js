@@ -1,6 +1,7 @@
 const express = require("express");
 const { connecter } = require("./db/connect");
 const routesUtilisateur = require("./route/utilisateur");
+const routesBoycott = require("./route/boycott");
 const app = express();
 
 //middleware qui permet de convertir les input encodés a la req
@@ -9,6 +10,7 @@ app.use(express.urlencoded({extend : true}));
 app.use(express.json());
 
 app.use("/api/v1", routesUtilisateur)
+app.use("/api/v1", routesBoycott)
 
 connecter("mongodb://localhost:27017/", (erreur) => {
     if(erreur){

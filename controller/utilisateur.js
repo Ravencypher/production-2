@@ -8,7 +8,8 @@ const ajouterUtilisateur = async (req, res) => {
         let utilisateur = new Utilisateur(
             req.body.pseudo,
             req.body.email, 
-            req.body.passeword
+            req.body.password,
+            true
         );
 
         let result = await client
@@ -63,7 +64,7 @@ const modifierUtilisateur = async (req, res) =>{
         let id = new ObjectID(req.parms.id);
         let nPseudo = req.body.pseudo;
         let nEmail = req.body.email;
-        let nPassword = req.body.passeword;
+        let nPassword = req.body.password;
 
         let result = await client
         .bd()
