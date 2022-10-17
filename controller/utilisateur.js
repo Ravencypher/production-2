@@ -9,7 +9,7 @@ const ajouterUtilisateur = async (req, res) => {
             req.body.pseudo,
             req.body.email, 
             req.body.password,
-            true
+            req.body.isAdmin
         );
 
         let result = await client
@@ -44,7 +44,7 @@ const getTousUtilisateurs = async(req, res) =>{
 //Pour recuperer un utilisateur
 const getUtilisateur = async(req, res) =>{
     try{
-      let id = new ObjectID(req.parms.id);  
+      let id = new ObjectID(req.params.id);  
       let cursor = client.bd().collection("utilisateurs").find({_id : id});
       let result = await cursor.toArray();
       //Test
@@ -61,16 +61,17 @@ const getUtilisateur = async(req, res) =>{
 //Pour modifier un utilisateur
 const modifierUtilisateur = async (req, res) =>{
     try{
-        let id = new ObjectID(req.parms.id);
+        let id = new ObjectID(req.params.id);
         let nPseudo = req.body.pseudo;
         let nEmail = req.body.email;
         let nPassword = req.body.password;
+        let nIsAdmin = req.body.isAdmin;
 
         let result = await client
         .bd()
         .collection("utilisateurs")
         .updateOne({_id : id},
-        {$set : {pseudo : nPseudo, email : nEmail, password : nPassword}}
+        {$set : {pseudo : nPseudo, email : nEmail, password : nPassword, isAdmin : nIsAdmin}}
         );
 
     //Test 
@@ -89,7 +90,7 @@ const modifierUtilisateur = async (req, res) =>{
 //Pour supprimer un utilisateur
 const supprimerUtilisateur = async (req, res) =>{
     try{
-        let id = new ObjectID(req.parms.id);
+        let id = new ObjectID(req.params.id);
 
         let result = await client
         .bd()

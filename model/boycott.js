@@ -4,7 +4,7 @@ class Boycott{
         this.titre = titre;
         this.img = img;
         this.resume = resume;
-        this.descrption = description;
+        this.description = description;
     }
 }
 module.exports = {Boycott}
