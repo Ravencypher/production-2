@@ -12,7 +12,6 @@ const ajouterBoycott = async (req, res) => {
             req.body.resume,
             req.body.description
         );
-        console.log(req.body.idUtilisateur);
         let result = await client
         .bd()
         .collection("boycotts")
@@ -21,9 +20,7 @@ const ajouterBoycott = async (req, res) => {
         let utilisateurBoycott = new UtilisateurBoycottJunction(
             result.insertedId,
             new ObjectID(req.body.idUtilisateur)            
-        );
-
-        
+        );        
 
         result = await client
         .bd()
