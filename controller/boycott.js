@@ -20,11 +20,11 @@ const ajouterBoycott = async (req, res) => {
         let utilisateurBoycott = new UtilisateurBoycottJunction(
             result.insertedId,
             new ObjectID(req.body.idUtilisateur)            
-        );        
+        ); // creation de variable de la table de junction (UtilisateurBoycottJunction)      
 
         result = await client
         .bd()
-        .collection("utilisateurBoycotts")
+        .collection("utilisateurBoycotts") //creation bd - collection
         .insertOne(utilisateurBoycott);//retourne la valeur dans la variable result
 
         res.status(200).json(result);//format jason
