@@ -1,4 +1,5 @@
 const { Boycott } = require("../model/boycott")
+const { UtilisateurBoycottJunction } = require("../model/UtilisateurBoycottJunction")
 const client = require("../db/connect");
 const { ObjectID } = require("bson");
 
@@ -11,11 +12,23 @@ const ajouterBoycott = async (req, res) => {
             req.body.resume,
             req.body.description
         );
-
+        console.log(req.body.idUtilisateur);
         let result = await client
         .bd()
         .collection("boycotts")
         .insertOne(boycott);//retourne la valeur dans la variable result
+
+        let utilisateurBoycott = new UtilisateurBoycottJunction(
+            result.insertedId,
+            new ObjectID(req.body.idUtilisateur)            
+        );
+
+        
+
+        result = await client
+        .bd()
+        .collection("utilisateurBoycotts")
+        .insertOne(utilisateurBoycott);//retourne la valeur dans la variable result
 
         res.status(200).json(result);//format jason
 

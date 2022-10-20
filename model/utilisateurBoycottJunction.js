@@ -1,7 +1,7 @@
-class utilisateurBoycott{
+class UtilisateurBoycottJunction{
     constructor(idBoycott,idUtilisateur){
         this.idBoycott = idBoycott;
         this.idUtilisateur = idUtilisateur;
     }
 }
-module.exports = {utilisateurBoycott}
+module.exports = {UtilisateurBoycottJunction}
