@@ -15,14 +15,9 @@ const utilisateurSchema = new Schema({
     required: true
   },
   isAdmin: {
-    type: String,
+    type: Boolean,
     required: true
-  },
-  userId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
+  }
 },
   { timestamps: true }
 );

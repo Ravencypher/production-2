@@ -1,34 +1,29 @@
-const { Boycott } = require("../model/boycott")
-const { UtilisateurBoycottJunction } = require("../model/UtilisateurBoycottJunction")
+const Boycott = require("../model/boycott")
+const UtilisateurBoycottJunction = require("../model/UtilisateurBoycottJunction")
 const client = require("../db/connect");
 const { ObjectID } = require("bson");
 
 //Pour ajouter un boycott
 const ajouterBoycott = async (req, res) => {
     try {
-        let boycott = new Boycott(
-            req.body.titre,
-            req.body.img, 
-            req.body.resume,
-            req.body.description
-        );
-        let result = await client
-        .bd()
-        .collection("boycotts")
-        .insertOne(boycott);//retourne la valeur dans la variable result
-
-        let utilisateurBoycott = new UtilisateurBoycottJunction(
-            result.insertedId,
-            new ObjectID(req.body.idUtilisateur)            
-        ); // creation de variable de la table de junction (UtilisateurBoycottJunction)      
-
-        result = await client
-        .bd()
-        .collection("utilisateurBoycotts") //creation bd - collection
-        .insertOne(utilisateurBoycott);//retourne la valeur dans la variable result
-
-        res.status(200).json(result);//format jason
-
+        let boycott = new Boycott({
+            titre: req.body.titre,
+            img: req.body.img,
+            resume: req.body.resume,
+            description: req.body.description,
+        });
+        boycott.save()
+        .then(result => {
+            console.log(result);
+            let utilisateurBoycott = new UtilisateurBoycottJunction ({
+                idBoycott: result._id,
+                idUtilisateur: new ObjectID(req.body.idUtilisateur),           
+            });
+            utilisateurBoycott.save()
+            .then(result => {
+                res.status(200).json(result);//format jason
+            })
+        });
     }catch (error) {
         console.log(error);
         res.status(500).json(error);

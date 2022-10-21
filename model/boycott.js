@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const boycottSchema = new Schema({
+const boycottSchema = mongoose.Schema({
   titre: {
     type: String,
     required: true
@@ -17,12 +17,7 @@ const boycottSchema = new Schema({
   description: {
     type: String,
     required: true
-  },
-  userId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
-    required: true
-  },
+  }
 },
    { timestamps: true }
 );

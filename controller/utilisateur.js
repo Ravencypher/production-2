@@ -1,24 +1,20 @@
-const { Utilisateur } = require("../model/utilisateur")
+const Utilisateur = require("../model/utilisateur")
 const client = require("../db/connect");
 const { ObjectID } = require("bson");
 
 //Pour ajouter un utilisateur
 const ajouterUtilisateur = async (req, res) => {
     try {
-        let utilisateur = new Utilisateur(
-            req.body.pseudo,
-            req.body.email, 
-            req.body.password,
-            req.body.isAdmin
-        );
-
-        let result = await client
-        .bd()
-        .collection("utilisateurs")
-        .insertOne(utilisateur);//retourne la valeur dans la variable result
-
-        res.status(200).json(result);//format jason
-
+        let utilisateur = new Utilisateur({
+            pseudo: req.body.pseudo,
+            email: req.body.email, 
+            password: req.body.password,
+            isAdmin: req.body.isAdmin,
+        });
+        utilisateur.save()
+        .then(result => {
+            res.status(200).json(result);//format jason            
+        })
     }catch (error) {
         console.log(error);
         res.status(500).json(error);
