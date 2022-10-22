@@ -1,11 +1,11 @@
 const express = require('express');
-const { ajouterBoycott, getTousBoycotts, getBoycott, modifierBoycott, supprimerBoycott } = require('../controller/boycott');
+const controller= require('../controller/boycott');
 const router = express.Router();
 
-router.route("/boycott").post(ajouterBoycott);
-router.route("/boycotts").get(getTousBoycotts);
-router.route("/boycott/:id").get(getBoycott);
-router.route("/boycott/:id").put(modifierBoycott);
-router.route("/boycott/:id").delete(supprimerBoycott);
+router.post("/boycott", controller.ajouterBoycott);
+router.get("/boycotts", controller.getTousBoycotts);
+router.get("/boycott/:id", controller.getBoycott);
+router.put("/boycott/:id", controller.modifierBoycott);
+router.delete("/boycott/:id", controller.supprimerBoycott);
 
 module.exports = router;
