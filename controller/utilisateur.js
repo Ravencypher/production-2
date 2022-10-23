@@ -3,76 +3,73 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 dotenv.config();
-const client = require("./");
-const { ObjectID } = require("bson");
+const {ObjectID} = require("bson");
+
+
 
 //Pour ajouter un utilisateur //signup
- exports.ajouterUtilisateur = async (req, res, next) => {
-       
-           const pseudo = req.body.pseudo;
-           const email = req.body.email; 
-           const password = req.body.password;
-           const isAdmin =  req.body.isAdmin;
-            
-      bcrypt
-        password.hash(12)
-        .then(hashedPw => {
-            const utilisateur = new Utilisateur({
-              email: email,
-              password: hashedPw,
-              pseudo: pseudo
-            });
-        
-        utilisateur.save()
-        .then(result => {
-            res.status(201).json({ 
-              message: 'Utilisateur créé !', 
-              utilisateurId: result._id 
-            });           
-        })
-        .catch (error=> {
-        console.log(error);
-        res.status(500).json(error);
-    },
-    next(error)
-);},
+exports.ajouterUtilisateur = async (req, res, next) => {          
+  bcrypt.hash(req.body.password, 12)
+    .then(hashedPw => {
+        const utilisateur = new Utilisateur({
+          pseudo: req.body.pseudo,
+          email: req.body.email,
+          password: hashedPw,          
+          isAdmin: req.body.isAdmin
+        });        
+        return utilisateur.save();
+      }).then(result => {
+          res.status(201).json({ 
+            message: 'Utilisateur créé !', 
+            utilisateurId: result._id 
+          });           
+      })
+      .catch (error=> {
+
+        if(!error.statusCode){
+          res.status(500).json(error);
+        }                
+        next(error)
+      });
+          
+}
 //Pour recuperer tous les utilisateurs
 exports.getTousUtilisateurs = async(req, res, next) =>{
-    try{
-      let cursor = Utilisateur.env().collection("utilisateurs").find();
-      let result = await cursor.toArray();
-      //Test
-      if(result.length > 0){
-        res.status(200).json(result);
+    Utilisateur.find()
+    .then(utilisateurs => {
+      if(utilisateurs){
+        res.status(200).json(utilisateurs);
       }else{
         res.status(204).json({msg:"Aucun utilisateur trouvé"});
       }
-    }catch(error){
-        console.log(error);
+    })
+    .catch (error=> {
+      if(!error.statusCode){
         res.status(500).json(error);
-    }
-    next(error)
-},
+      }                
+      next(error)
+    });    
+}
 //Pour recuperer un utilisateur 
-/* exports.getUtilisateur = async(req, res, next) =>{
-    try{
-      let id = new ObjectID(req.params.id);  
-      let cursor = utilisateur.env().collection("utilisateurs").findOne({_id : id});
-      let result = await cursor.toArray();
-      //Test
-      if(result.length > 0){
-        res.status(200).json(result[0]);
+ exports.getUtilisateur = async(req, res, next) =>{
+    Utilisateur.findById(req.params.id)
+    .then(utilisateur => {
+      if(utilisateur){
+        res.status(200).json(utilisateur);
       }else{
-        res.status(404).json({msg:"Cet utilisateur n'existe pas"});
+        res.status(204).json({msg:"Cet utilisateur n'existe pas"});
       }
-    }catch(error){
-        console.log(error);
+    })
+    .catch (error=> {
+      if(!error.statusCode){
         res.status(500).json(error);
-    }
-    next(error) 
-},*/
+      }                
+      next(error)
+    });  
+  } 
+  
 //Pour recuperer un utilisateur//login
-exports.getUtilisateur = (req, res, next) => {
+exports.getUtilisateurLogin= (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     let loadedUtilisateur;
@@ -108,7 +105,7 @@ exports.getUtilisateur = (req, res, next) => {
         }
         next(err);
       });
-  },
+  }
 //Pour modifier un utilisateur
 exports.modifierUtilisateur = async (req, res) =>{
     try{
@@ -138,7 +135,7 @@ exports.modifierUtilisateur = async (req, res) =>{
 
     }
     next(error)
-},
+}
 //Pour supprimer un utilisateur
 exports.supprimerUtilisateur = async (req, res) =>{
     try{
@@ -158,5 +155,5 @@ exports.supprimerUtilisateur = async (req, res) =>{
         console.log(error);
         res.status(500).json(error)}
 
-    })
- }
+    }
+ 
