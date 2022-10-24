@@ -11,12 +11,10 @@ const boycottSchema = mongoose.Schema({
   },
   
   resume: {
-    type: String,
-    required: true
+    type: String
   },
   description: {
-    type: String,
-    required: true
+    type: String
   }
 },
    { timestamps: true }
