@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 dotenv.config();
 const {ObjectID} = require("bson");
+const utilisateur = require("../model/utilisateur");
 
 
 
@@ -108,52 +109,44 @@ exports.getUtilisateurLogin= (req, res, next) => {
   }
 //Pour modifier un utilisateur
 exports.modifierUtilisateur = async (req, res) =>{
-    try{
+   
         let id = new ObjectID(req.params.id);
         let nPseudo = req.body.pseudo;
         let nEmail = req.body.email;
         let nPassword = req.body.password;
         let nIsAdmin = req.body.isAdmin;
 
-        let result = await client
-        .env()
-        .collection("utilisateurs")
-        .updateOne({_id : id},
+       Utilisateur.updateOne({_id : id},
         {$set : {pseudo : nPseudo, email : nEmail, password : nPassword, isAdmin : nIsAdmin}}
-        );
-
-    //Test 
-    if(result.modifiedCount == 1){
-        res.status(200).json({msg : "Modification réussie"});   
-    }else{
-        res.status(404).json({msg : "Cet utilisateur n'existe pas"});
-    }
-
-    }catch(error){
+        )
+        .then(id =>{
+          if(id.modifiedCount == 1){
+            res.status(200).json({msg : "Modification réussie"});   
+        }else{
+            res.status(404).json({msg : "Cet utilisateur n'existe pas"});
+        }
+        })
+        .catch(error =>{
         console.log(error);
         res.status(500).json(error);
-
-    }
-    next(error)
-}
+         });
+  }
 //Pour supprimer un utilisateur
 exports.supprimerUtilisateur = async (req, res) =>{
-    try{
+    
         let id = new ObjectID(req.params.id);
 
-        let result = await client
-        .env()
-        .collection("utilisateurs")
-        .deleteOne({_id : id},);
-    //Test
-    if(result.deletedCount == 1){
-        res.status(200).json({msg :"Suppression réussie"}); 
-    }else{
-        res.status(404).json({msg : "Cet utilisateur n'existe pas"});
-    }
-    }catch(error){
+        Utilisateur.deleteOne({_id : id},)
+        .then(id =>{     
+          if(id.deletedCount == 1){
+            res.status(200).json({msg :"Suppression réussie"}); 
+         }else{
+      res.status(404).json({msg : "Cet utilisateur n'existe pas"});
+         }
+         })
+        .catch(error =>{
         console.log(error);
-        res.status(500).json(error)}
-
-    }
+        res.status(500).json(error);
+      });
+  }
  
