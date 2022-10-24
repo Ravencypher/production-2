@@ -6,7 +6,7 @@ const boycott = require("../model/boycott");
 dotenv.config();
 
 //Pour ajouter un boycott
-const ajouterBoycott = async (req, res, next) => {
+exports.ajouterBoycott = async (req, res, next) => {
    
         const boycott = new Boycott({
             titre: req.body.titre,
@@ -49,7 +49,7 @@ const ajouterBoycott = async (req, res, next) => {
     
 
 //Pour recuperer tous les boycotts
-const getTousBoycotts = async(req, res, next) =>{
+exports.getTousBoycotts = async(req, res, next) =>{
     Boycott.find()
     .then(boycotts => {
       if(boycotts){
@@ -83,7 +83,7 @@ const getTousBoycotts = async(req, res, next) =>{
 } */
 
 //Pour recuperer un boycott
-const getBoycott = async(req, res, next) =>{
+exports.getBoycott = async(req, res, next) =>{
 
     Boycott.findById(req.params.id)
     .then(boycott => {
@@ -116,7 +116,7 @@ const getBoycott = async(req, res, next) =>{
     } */
 
 //Pour modifier un boycott
-const modifierBoycott = async (req, res) =>{
+exports.modifierBoycott = async (req, res) =>{
     let id = new ObjectID(req.params.id);
     let nTitre = req.body.titre;
     let nImg = req.body.img;
@@ -168,7 +168,7 @@ const modifierBoycott = async (req, res) =>{
 }; */
 
 //Pour supprimer un boycott
-const supprimerBoycott = async (req, res) =>{
+exports.supprimerBoycott = async (req, res) =>{
 
     let id = new ObjectID(req.params.id);
 
@@ -206,4 +206,3 @@ const supprimerBoycott = async (req, res) =>{
     }
 }; */
 
-module.exports = {ajouterBoycott, getTousBoycotts, getBoycott, modifierBoycott, supprimerBoycott};
