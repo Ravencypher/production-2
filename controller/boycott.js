@@ -104,11 +104,11 @@ exports.getBoycottUtilisateur = async(req, res, next) =>{
 
 //Pour modifier un boycott
 exports.modifierBoycott = async (req, res) =>{
-    let id = new ObjectID(req.params.id);
-    let nTitre = req.body.titre;
-    let nImg = req.body.img;
-    let nResume = req.body.resume;
-    let nDescription = req.body.description
+    const id = new ObjectID(req.params.id);
+    const nTitre = req.body.titre;
+    const nImg = req.body.img;
+    const nResume = req.body.resume;
+    const nDescription = req.body.description
 
    Boycott.updateOne({_id : id},
     {$set : {titre : nTitre, img : nImg, resume : nResume, description : nDescription}}
@@ -129,7 +129,7 @@ exports.modifierBoycott = async (req, res) =>{
 //Pour supprimer un boycott
 exports.supprimerBoycott = async (req, res) =>{
 
-    let id = new ObjectID(req.params.id);
+    const id = new ObjectID(req.params.id);
 
     Boycott.deleteOne({_id : id},)
     .then(id =>{     

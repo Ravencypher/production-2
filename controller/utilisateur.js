@@ -137,11 +137,11 @@ exports.getUtilisateurLogin= (req, res, next) => {
 //Pour modifier un utilisateur
 exports.modifierUtilisateur = async (req, res) =>{
    
-        let id = new ObjectID(req.params.id);
-        let nPseudo = req.body.pseudo;
-        let nEmail = req.body.email;
-        let nPassword = req.body.password;
-        let nIsAdmin = req.body.isAdmin;
+  const id = new ObjectID(req.params.id);
+  const nPseudo = req.body.pseudo;
+  const nEmail = req.body.email;
+  const nPassword = req.body.password;
+  const nIsAdmin = req.body.isAdmin;
 
        Utilisateur.updateOne({_id : id},
         {$set : {pseudo : nPseudo, email : nEmail, password : nPassword, isAdmin : nIsAdmin}}
@@ -161,7 +161,7 @@ exports.modifierUtilisateur = async (req, res) =>{
 //Pour supprimer un utilisateur
 exports.supprimerUtilisateur = async (req, res) =>{
     
-        let id = new ObjectID(req.params.id);
+  const id = new ObjectID(req.params.id);
 
         Utilisateur.deleteOne({_id : id},)
         .then(id =>{     
