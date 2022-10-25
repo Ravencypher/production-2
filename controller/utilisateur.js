@@ -5,6 +5,8 @@ const dotenv = require('dotenv');
 dotenv.config();
 const {ObjectID} = require("bson");
 const utilisateur = require("../model/utilisateur");
+const boycott = require("../model/boycott");
+const UtilisateurBoycottJunction = require("../model/UtilisateurBoycottJunction")
 
 
 
@@ -68,6 +70,31 @@ exports.getTousUtilisateurs = async(req, res, next) =>{
       next(error)
     });  
   } 
+
+  //Pour recuperer tous les boycotts d'un utilisateur 
+ exports.getUtilisateurBoycotts = async(req, res, next) =>{
+  UtilisateurBoycottJunction.find({idUtilisateur: req.params.id})
+  .then(Junctions => {
+    if(Junctions){
+      //console.log(Junctions);
+      //console.log(Junctions.map(j => j.idBoycott));
+      // Map extrait l'id de boycott de la jonction
+      // $in sert à filtrer toute les _id qui sont à l'intérieur du tableau d'id;
+      boycott.find({ _id : { $in : Junctions.map(j => j.idBoycott)}})
+      .then(Boycotts => {
+        res.status(200).json(Boycotts);
+      })      
+    }else{
+      res.status(204).json({msg:"Cet utilisateur n'a aucun boycott"});
+    }
+  })
+  .catch (error=> {
+    if(!error.statusCode){
+      res.status(500).json(error);
+    }                
+    next(error)
+  });  
+} 
   
 //Pour recuperer un utilisateur//login
 exports.getUtilisateurLogin= (req, res, next) => {

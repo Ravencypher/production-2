@@ -16,11 +16,19 @@ exports.ajouterBoycott = async (req, res, next) => {
         });
         return boycott.save()
         .then(result => {
-            res.status(201).json({ 
-              message: 'Boycott créé !', 
-              utilisateurId: result._id ,
-            }); 
-        })         
+            let utilisateurBoycott = new UtilisateurBoycottJunction ({
+                idBoycott: result._id,
+                idUtilisateur: new ObjectID(req.body.idUtilisateur),           
+            });
+            utilisateurBoycott.save()
+        .then(result => {
+                res.status(200).json({ 
+                  message: 'Boycott créé !', 
+                  idBoycott: result.idBoycott,
+                  idUtilisateur: result.idUtilisateur,
+                });//format jason
+            })
+        })              
         .catch (error=> {
           if(!error.statusCode){
             res.status(500).json(error);
@@ -29,24 +37,7 @@ exports.ajouterBoycott = async (req, res, next) => {
         });
        }
 
-     /* .then(result => {
-            console.log(result);
-            let utilisateurBoycott = new UtilisateurBoycottJunction ({
-                idBoycott: result._id,
-                idUtilisateur: new ObjectID(req.body.idUtilisateur),           
-            });
-            utilisateurBoycott.save()
-        .then(result => {
-                res.status(200).json(result);//format jason
-            })
-        })
-        .catch (error => {
-        console.log(error);
-        res.status(500).json(error);
-
-        next(error)
-        }); */
-    
+     
 
 //Pour recuperer tous les boycotts
 exports.getTousBoycotts = async(req, res, next) =>{
@@ -66,22 +57,6 @@ exports.getTousBoycotts = async(req, res, next) =>{
     });    
 }
 
-
-    /* try{
-      let cursor = client.bd().collection("boycotts").find();
-      let result = await cursor.toArray();
-      //Test
-      if(result.length > 0){
-        res.status(200).json(result);
-      }else{
-        res.status(204).json({msg:"Aucun boycotts trouvé"});
-      }
-    }catch(error){
-        console.log(error);
-        res.status(500).json(error);
-    }
-} */
-
 //Pour recuperer un boycott
 exports.getBoycott = async(req, res, next) =>{
 
@@ -100,20 +75,6 @@ exports.getBoycott = async(req, res, next) =>{
       next(error)
     });
 };
-    /* try{
-      let id = new ObjectID(req.params.id);  
-      let cursor = client.bd().collection("boycotts").find({_id : id});
-      let result = await cursor.toArray();
-      //Test
-      if(result.length > 0){
-        res.status(200).json(result[0]);
-      }else{
-        res.status(404).json({msg:"Cet boycott n'existe pas"});
-      }
-    }catch(error){
-        console.log(error);
-        res.status(500).json(error);
-    } */
 
 //Pour modifier un boycott
 exports.modifierBoycott = async (req, res) =>{
@@ -139,34 +100,6 @@ exports.modifierBoycott = async (req, res) =>{
      });
 }
 
-
-    /* try{
-        let id = new ObjectID(req.params.id);
-        let nTitre = req.body.titre;
-        let nImg = req.body.img;
-        let nResume = req.body.resume;
-
-        let result = await client
-        .bd()
-        .collection("boycotts")
-        .updateOne({_id : id},
-        {$set : {titre : nTitre, img : nImg, resume : nResume}}
-        );
-
-    //Test 
-    if(result.modifiedCount == 1){
-        res.status(200).json({msg : "Modification réussie"});   
-    }else{
-        res.status(404).json({msg : "Cet boycott n'existe pas"});
-    }
-
-    }catch(error){
-        console.log(error);
-        res.status(500).json(error);
-
-    }
-}; */
-
 //Pour supprimer un boycott
 exports.supprimerBoycott = async (req, res) =>{
 
@@ -185,24 +118,3 @@ exports.supprimerBoycott = async (req, res) =>{
     res.status(500).json(error);
   });
 }
-    /* try{
-        let id = new ObjectID(req.params.id);
-
-        let result = await client
-        .bd()
-        .collection("boycotts")
-        .deleteOne({_id : id},);
-    //Test
-    if(result.deletedCount == 1){
-        res.status(200).json({msg :"Suppression réussie"}); 
-    }else{
-        res.status(404).json({msg : "Cet boycott n'existe pas"});
-    }
-
-    }catch(error){
-        console.log(error);
-        res.status(500).json(error);
-
-    }
-}; */
-
