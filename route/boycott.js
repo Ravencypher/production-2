@@ -5,6 +5,7 @@ const router = express.Router();
 router.post("/boycott", controller.ajouterBoycott);
 router.get("/boycotts", controller.getTousBoycotts);
 router.get("/boycott/:id", controller.getBoycott);
+router.get("/boycott/:id/utilisateur", controller.getBoycottUtilisateur);
 router.put("/boycott/:id", controller.modifierBoycott);
 router.delete("/boycott/:id", controller.supprimerBoycott);
 

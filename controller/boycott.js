@@ -3,6 +3,7 @@ const UtilisateurBoycottJunction = require("../model/UtilisateurBoycottJunction"
 const { ObjectID } = require("bson");
 const dotenv = require('dotenv');
 const boycott = require("../model/boycott");
+const utilisateur = require("../model/utilisateur");
 dotenv.config();
 
 //Pour ajouter un boycott
@@ -75,6 +76,31 @@ exports.getBoycott = async(req, res, next) =>{
       next(error)
     });
 };
+
+//Afficher l'utilisateur d'un boycott 
+exports.getBoycottUtilisateur = async(req, res, next) =>{
+  UtilisateurBoycottJunction.findOne({idBoycott: req.params.id})
+  .then(Junction => {
+    if(Junction){
+      //console.log(Junctions);
+      //console.log(Junctions.map(j => j.idBoycott));
+      // Map extrait l'id de boycott de la jonction
+      // $in sert à filtrer toute les _id qui sont à l'intérieur du tableau d'id;
+      utilisateur.findOne({ _id : Junction.idUtilisateur})
+      .then(Utilisateur => {
+        res.status(200).json(Utilisateur);
+      })      
+    }else{
+      res.status(204).json({msg:"Ce boycott n'a aucun utilisateur"});
+    }
+  })
+  .catch (error=> {
+    if(!error.statusCode){
+      res.status(500).json(error);
+    }                
+    next(error)
+  });  
+} 
 
 //Pour modifier un boycott
 exports.modifierBoycott = async (req, res) =>{
