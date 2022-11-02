@@ -8,7 +8,10 @@ dotenv.config();
 
 //Pour ajouter un boycott
 exports.ajouterBoycott = async (req, res, next) => {
-   
+   const img = req.file;
+   if(!req.file){
+    res.status(400).json({error: "Veuillez fournir une image"})
+   }
         const boycott = new Boycott({
             titre: req.body.titre,
             img: req.body.img,
@@ -27,7 +30,7 @@ exports.ajouterBoycott = async (req, res, next) => {
                   message: 'Boycott créé !', 
                   idBoycott: result.idBoycott,
                   idUtilisateur: result.idUtilisateur,
-                });//format jason
+                });
             })
         })              
         .catch (error=> {
@@ -37,8 +40,6 @@ exports.ajouterBoycott = async (req, res, next) => {
           next(error)
         });
        }
-
-     
 
 //Pour recuperer tous les boycotts
 exports.getTousBoycotts = async(req, res, next) =>{
