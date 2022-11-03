@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const routesUtilisateur = require("./route/utilisateur");
 const routesBoycott = require("./route/boycott");
+const routesAuth = require("./route/is-auth");
+
 const app = express();
 dotenv.config();
 
@@ -23,6 +25,7 @@ app.use((req, res, next) => {
 
 app.use("/api/v1", routesUtilisateur)
 app.use("/api/v1", routesBoycott)
+app.use("/api/v1", routesAuth)
 
 const PORT = process.env.PORT || 3000;
 mongoose
@@ -33,6 +36,3 @@ mongoose
     });
   })
   .catch(err => console.log(err));
-
-
-
