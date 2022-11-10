@@ -5,7 +5,7 @@ const utilisateur = require("../model/utilisateur");
 const { ObjectID } = require("bson");
 const dotenv = require('dotenv');
 const nodeFetch = require('node-fetch');
-const Formdata = require('form-data');
+const FormData = require('form-data');
 dotenv.config();
 
 //Pour ajouter un boycott
@@ -14,24 +14,24 @@ exports.ajouterBoycott = async (req, res, next) => {
    if(!req.file){
       res.status(400).json({error: "Veuillez fournir une image"})
       }
-    const img = req.file;
-    const formdata = new FormData();
+    const image = req.file;
+    const formData = new FormData();
 
-    formdata.append("img", img.buffer, {
-      contentType: img.mimetype,
-      filename: img.originalname,
+    formData.append("image", image.buffer, {
+      contentType: image.mimetype,
+      filename: image.originalname,
     });
 
     nodeFetch("https://images.kalanso.top/image/?api=PO65UYR",{
       method: "POST",
-      body: formdata,
+      body: formData,
     })
    .then((response) => response.json())
    .then((data) => {
       if(data.status === "success"){
         const boycott = new Boycott({
         titre: req.body.titre,
-        img: data.filename,
+        image: data.filename,
         resume: req.body.resume,
         description: req.body.description
       })
@@ -154,7 +154,7 @@ exports.supprimerBoycott = async (req, res) =>{
     Boycott.deleteOne({_id : id},)
     .then(id =>{     
       if(id.deletedCount == 1){
-        res.status(204).json({msg :"Suppression réussie"}); 
+        res.status(200).json({msg :"Suppression réussie"}); 
      }else{
   res.status(404).json({msg : "Ce boycott n'existe pas"});
      }
