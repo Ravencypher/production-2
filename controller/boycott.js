@@ -1,42 +1,41 @@
-const Boycott = require("../model/boycott")
-const UtilisateurBoycottJunction = require("../model/UtilisateurBoycottJunction")
-const boycott = require("../model/boycott")
-const utilisateur = require("../model/utilisateur")
+const Boycott = require("../model/boycott");
+const UtilisateurBoycottJunction = require("../model/UtilisateurBoycottJunction");
+const boycott = require("../model/boycott");
+const utilisateur = require("../model/utilisateur");
 const { ObjectID } = require("bson");
 const dotenv = require('dotenv');
 const nodeFetch = require('node-fetch');
-const formdata = require('form-data');
+const Formdata = require('form-data');
 dotenv.config();
 
 //Pour ajouter un boycott
 exports.ajouterBoycott = async (req, res, next) => {
    
    if(!req.file){
-    res.status(400).json({error: "Veuillez fournir une image"})
-   }
-   const img = req.file;
+      res.status(400).json({error: "Veuillez fournir une image"})
+      }
+    const img = req.file;
+    const formdata = new FormData();
 
-   const formdata = new FormData();
-   
-   formdata.append("img", img.buffer, {
-    contentType: img.mimetype,
-    filename: img.originalname,
-   });
-    
-   nodeFetch("https://images.kalanso.top/image/?api=PO65UYR",{
-    method: "POST",
-    body: FormData,
-   })
+    formdata.append("img", img.buffer, {
+      contentType: img.mimetype,
+      filename: img.originalname,
+    });
+
+    nodeFetch("https://images.kalanso.top/image/?api=PO65UYR",{
+      method: "POST",
+      body: formdata,
+    })
    .then((response) => response.json())
    .then((data) => {
-    if(data.status === "success"){
-      const boycott = new Boycott({
-      titre: req.body.titre,
-      img: data.filename,
-      resume: req.body.resume,
-      description: req.body.description
-    })
-    return boycott.save()
+      if(data.status === "success"){
+        const boycott = new Boycott({
+        titre: req.body.titre,
+        img: data.filename,
+        resume: req.body.resume,
+        description: req.body.description
+      })
+      return boycott.save()
         .then(result => {
             let utilisateurBoycott = new UtilisateurBoycottJunction ({
                 idBoycott: result._id,
@@ -58,7 +57,8 @@ exports.ajouterBoycott = async (req, res, next) => {
           next(error)
         });
       }
-       },
+    })
+  },
 
 //Pour recuperer tous les boycotts
 exports.getTousBoycotts = async(req, res, next) =>{
@@ -163,5 +163,4 @@ exports.supprimerBoycott = async (req, res) =>{
     console.log(error);
     res.status(500).json(error);
   });
-})
 }
