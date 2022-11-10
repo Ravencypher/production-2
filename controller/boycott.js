@@ -67,7 +67,7 @@ exports.getTousBoycotts = async(req, res, next) =>{
       if(boycotts){
         res.status(200).json(boycotts);
       }else{
-        res.status(204).json({msg:"Aucun boycott trouvé"});
+        res.status(404).json({msg:"Aucun boycott trouvé"});
       }
     })
     .catch (error=> {
@@ -86,7 +86,7 @@ exports.getBoycott = async(req, res, next) =>{
       if(boycott){
         res.status(200).json(boycott);
       }else{
-        res.status(204).json({msg:"Aucun boycott trouvé"});
+        res.status(404).json({msg:"Aucun boycott trouvé"});
       }
     })
     .catch (error=> {
@@ -111,7 +111,7 @@ exports.getBoycottUtilisateur = async(req, res, next) =>{
         res.status(200).json(Utilisateur);
       })      
     }else{
-      res.status(204).json({msg:"Ce boycott n'a aucun utilisateur"});
+      res.status(404).json({msg:"Ce boycott n'a aucun utilisateur"});
     }
   })
   .catch (error=> {
@@ -154,7 +154,7 @@ exports.supprimerBoycott = async (req, res) =>{
     Boycott.deleteOne({_id : id},)
     .then(id =>{     
       if(id.deletedCount == 1){
-        res.status(200).json({msg :"Suppression réussie"}); 
+        res.status(204).json({msg :"Suppression réussie"}); 
      }else{
   res.status(404).json({msg : "Ce boycott n'existe pas"});
      }

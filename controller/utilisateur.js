@@ -8,8 +8,6 @@ const utilisateur = require("../model/utilisateur");
 const boycott = require("../model/boycott");
 const UtilisateurBoycottJunction = require("../model/UtilisateurBoycottJunction")
 
-
-
 //Pour ajouter un utilisateur //signup
 exports.ajouterUtilisateur = async (req, res, next) => {          
   bcrypt.hash(req.body.password, 12)
@@ -43,7 +41,7 @@ exports.getTousUtilisateurs = async(req, res, next) =>{
       if(utilisateurs){
         res.status(200).json(utilisateurs);
       }else{
-        res.status(204).json({msg:"Aucun utilisateur trouvé"});
+        res.status(404).json({msg:"Aucun utilisateur trouvé"});
       }
     })
     .catch (error=> {
@@ -60,7 +58,7 @@ exports.getTousUtilisateurs = async(req, res, next) =>{
       if(utilisateur){
         res.status(200).json(utilisateur);
       }else{
-        res.status(204).json({msg:"Cet utilisateur n'existe pas"});
+        res.status(404).json({msg:"Cet utilisateur n'existe pas"});
       }
     })
     .catch (error=> {
@@ -85,7 +83,7 @@ exports.getTousUtilisateurs = async(req, res, next) =>{
         res.status(200).json(Boycotts);
       })      
     }else{
-      res.status(204).json({msg:"Cet utilisateur n'a aucun boycott"});
+      res.status(404).json({msg:"Cet utilisateur n'a aucun boycott"});
     }
   })
   .catch (error=> {
@@ -166,7 +164,7 @@ exports.supprimerUtilisateur = async (req, res) =>{
         Utilisateur.deleteOne({_id : id},)
         .then(id =>{     
           if(id.deletedCount == 1){
-            res.status(200).json({msg :"Suppression réussie"}); 
+            res.status(204).json({msg :"Suppression réussie"}); 
          }else{
       res.status(404).json({msg : "Cet utilisateur n'existe pas"});
          }
