@@ -4,9 +4,8 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 dotenv.config();
 const {ObjectID} = require("bson");
-const utilisateur = require("../model/utilisateur");
 const boycott = require("../model/boycott");
-const UtilisateurBoycottJunction = require("../model/UtilisateurBoycottJunction")
+const UtilisateurBoycottJunction = require("../model/UtilisateurBoycottJunction");
 
 //Pour ajouter un utilisateur //signup
 exports.ajouterUtilisateur = async (req, res, next) => {          
