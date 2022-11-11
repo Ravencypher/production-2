@@ -14,7 +14,9 @@ exports.ajouterUtilisateur = async (req, res, next) => {
         const utilisateur = new Utilisateur({
           pseudo: req.body.pseudo,
           email: req.body.email,
-          password: hashedPw,          
+          password: hashedPw,
+          ville: req.body.ville,
+          pays: req.body.pays,          
           isAdmin: req.body.isAdmin
         });        
         return utilisateur.save();
@@ -138,10 +140,12 @@ exports.modifierUtilisateur = async (req, res) =>{
   const nPseudo = req.body.pseudo;
   const nEmail = req.body.email;
   const nPassword = req.body.password;
+  const nVille = req.body.ville;
+  const nPays = req.body.pays;
   const nIsAdmin = req.body.isAdmin;
 
        Utilisateur.updateOne({_id : id},
-        {$set : {pseudo : nPseudo, email : nEmail, password : nPassword, isAdmin : nIsAdmin}}
+        {$set : {pseudo : nPseudo, email : nEmail, password : nPassword, ville : nVille, pays : nPays,  isAdmin : nIsAdmin}}
         )
         .then(id =>{
           if(id.modifiedCount == 1){

@@ -14,6 +14,14 @@ const utilisateurSchema = new Schema({
     type: String,
     required: true
   },
+  ville: {
+    type: String,
+    required: true
+  },
+  pays: {
+    type: String,
+    required: true
+  },
   isAdmin: {
     type: Boolean,
     required: true
