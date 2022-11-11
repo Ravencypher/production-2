@@ -25,7 +25,7 @@ exports.ajouterBoycott = async (req, res, next) => {
 
     nodeFetch("https://images.kalanso.top/image/?api=PO65UYR",{
       method: "POST",
-      body: formdata,
+      body: formData,
     })
    .then((response) => response.json())
    .then((data) => {
@@ -155,7 +155,7 @@ exports.supprimerBoycott = async (req, res) =>{
     Boycott.deleteOne({_id : id},)
     .then(id =>{     
       if(id.deletedCount == 1){
-        res.status(204).json({msg :"Suppression réussie"}); 
+        res.status(200).json({msg :"Suppression réussie"}); 
      }else{
   res.status(404).json({msg : "Ce boycott n'existe pas"});
      }

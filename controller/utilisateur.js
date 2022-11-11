@@ -163,7 +163,7 @@ exports.supprimerUtilisateur = async (req, res) =>{
         Utilisateur.deleteOne({_id : id},)
         .then(id =>{     
           if(id.deletedCount == 1){
-            res.status(204).json({msg :"Suppression réussie"}); 
+            res.status(200).json({msg :"Suppression réussie"}); 
          }else{
       res.status(404).json({msg : "Cet utilisateur n'existe pas"});
          }
