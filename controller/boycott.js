@@ -6,6 +6,7 @@ const { ObjectID } = require("bson");
 const dotenv = require('dotenv');
 const nodeFetch = require('node-fetch');
 const FormData = require('form-data');
+const sharp = require('sharp');
 dotenv.config();
 
 //Pour ajouter un boycott
@@ -15,10 +16,10 @@ exports.ajouterBoycott = async (req, res, next) => {
       res.status(400).json({error: "Veuillez fournir une image"})
       }
     const image = req.file;
-    //const resize = sharp(image.buffer).resize({width: 500}).jpeg({quality: 80});
+    const resize = sharp(image.buffer).resize({width:500}).jpeg({quality: 80}); 
     const formdata = new FormData();
 
-    formdata.append("image", image.buffer, {
+    formdata.append("image", resize, {
       contentType: image.mimetype,
       filename: image.originalname,
     });
