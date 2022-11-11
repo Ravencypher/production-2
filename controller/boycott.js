@@ -5,7 +5,7 @@ const utilisateur = require("../model/utilisateur");
 const { ObjectID } = require("bson");
 const dotenv = require('dotenv');
 const nodeFetch = require('node-fetch');
-const Formdata = require('form-data');
+const FormData = require('form-data');
 dotenv.config();
 
 //Pour ajouter un boycott
@@ -14,12 +14,13 @@ exports.ajouterBoycott = async (req, res, next) => {
    if(!req.file){
       res.status(400).json({error: "Veuillez fournir une image"})
       }
-    const img = req.file;
+    const image = req.file;
+    //const resize = sharp(image.buffer).resize({width: 500}).jpeg({quality: 80});
     const formdata = new FormData();
 
-    formdata.append("img", img.buffer, {
-      contentType: img.mimetype,
-      filename: img.originalname,
+    formdata.append("image", image.buffer, {
+      contentType: image.mimetype,
+      filename: image.originalname,
     });
 
     nodeFetch("https://images.kalanso.top/image/?api=PO65UYR",{
@@ -31,7 +32,7 @@ exports.ajouterBoycott = async (req, res, next) => {
       if(data.status === "success"){
         const boycott = new Boycott({
         titre: req.body.titre,
-        img: data.filename,
+        image: data.filename,
         resume: req.body.resume,
         description: req.body.description
       })
