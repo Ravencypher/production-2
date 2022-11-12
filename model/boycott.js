@@ -16,7 +16,12 @@ const boycottSchema = mongoose.Schema({
   },
   description: {
     type: String
-  }
+  },
+  followers: [{
+    type: Schema.Types.ObjectId,
+    ref: 'utilisateur',
+    required: true
+  }]
 },
    { timestamps: true }
 );

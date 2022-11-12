@@ -15,8 +15,8 @@ exports.ajouterUtilisateur = async (req, res, next) => {
           pseudo: req.body.pseudo,
           email: req.body.email,
           password: hashedPw,
-          ville: req.body.ville,
-          pays: req.body.pays,          
+          pays: req.body.pays, 
+          ville: req.body.ville,                   
           isAdmin: req.body.isAdmin
         });        
         return utilisateur.save();
@@ -39,7 +39,7 @@ exports.ajouterUtilisateur = async (req, res, next) => {
 exports.getTousUtilisateurs = async(req, res, next) =>{
     Utilisateur.find()
     .then(utilisateurs => {
-      if(utilisateurs){
+      if(utilisateurs.length > 0){
         res.status(200).json(utilisateurs);
       }else{
         res.status(404).json({msg:"Aucun utilisateur trouvé"});
@@ -74,7 +74,7 @@ exports.getTousUtilisateurs = async(req, res, next) =>{
  exports.getUtilisateurBoycotts = async(req, res, next) =>{
   UtilisateurBoycottJunction.find({idUtilisateur: req.params.id})
   .then(Junctions => {
-    if(Junctions){
+    if(Junctions.length > 0){      
       //console.log(Junctions);
       //console.log(Junctions.map(j => j.idBoycott));
       // Map extrait l'id de boycott de la jonction

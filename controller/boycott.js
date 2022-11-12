@@ -26,7 +26,7 @@ exports.ajouterBoycott = async (req, res, next) => {
 
     nodeFetch("https://images.kalanso.top/image/?api=PO65UYR",{
       method: "POST",
-      body: formData,
+      body: formdata,
     })
    .then((response) => response.json())
    .then((data) => {
@@ -47,8 +47,7 @@ exports.ajouterBoycott = async (req, res, next) => {
         .then(result => {
                 res.status(200).json({ 
                   message: 'Boycott créé !', 
-                  idBoycott: result.idBoycott,
-                  idUtilisateur: result.idUtilisateur,
+                  idBoycott: result.idBoycott
                 });
             })
         })              
@@ -62,11 +61,52 @@ exports.ajouterBoycott = async (req, res, next) => {
     })
   },
 
+exports.suivreBoycott = async (req, res, next) => {
+  const id = new ObjectID(req.params.id);
+  const idUtilisateur = new ObjectID(req.body.idUtilisateur);
+
+  Boycott.findById(id)
+  .then(boycott => {
+    if(boycott){
+      if(boycott.followers.includes(idUtilisateur)){
+        res.status(202).json({msg : "Vous suivez déjà ce boycott"});  
+      }
+      else{
+        boycott.followers.push(idUtilisateur);
+      
+        Boycott.updateOne({_id : id},
+          {$set : {followers : boycott.followers}}
+          )
+          .then(id =>{
+            if(id.modifiedCount == 1){
+                res.status(200).json({msg : "Vous suivez maintenant ce boycott"});   
+            }else{
+                res.status(404).json({msg : "Ce boycott n'existe pas"});
+            }
+          })
+          .catch(error =>{
+              console.log(error);
+              res.status(500).json(error);
+           });
+      }
+
+    }else{
+      res.status(404).json({msg:"Aucun boycott trouvé"});
+    }
+  })
+  .catch (error=> {
+    if(!error.statusCode){
+      res.status(500).json(error);
+    }                
+    next(error)
+  });
+}
+
 //Pour recuperer tous les boycotts
 exports.getTousBoycotts = async(req, res, next) =>{
     Boycott.find()
     .then(boycotts => {
-      if(boycotts){
+      if(boycotts.length > 0){
         res.status(200).json(boycotts);
       }else{
         res.status(404).json({msg:"Aucun boycott trouvé"});
@@ -82,7 +122,6 @@ exports.getTousBoycotts = async(req, res, next) =>{
 
 //Pour recuperer un boycott
 exports.getBoycott = async(req, res, next) =>{
-
     Boycott.findById(req.params.id)
     .then(boycott => {
       if(boycott){
