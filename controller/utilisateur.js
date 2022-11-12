@@ -94,6 +94,19 @@ exports.getTousUtilisateurs = async(req, res, next) =>{
     next(error)
   });  
 } 
+
+exports.getUtilisateurBoycottsSuivis = async(req, res, next) =>{
+  boycott.find({ followers : new ObjectID(req.params.id)})
+  .then(Boycotts => {
+    res.status(200).json(Boycotts);
+  })  
+  .catch (error=> {
+    if(!error.statusCode){
+      res.status(500).json(error);
+    }                
+    next(error)
+  });  
+} 
   
 //Pour recuperer un utilisateur//login
 exports.getUtilisateurLogin= (req, res, next) => {
