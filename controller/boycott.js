@@ -105,7 +105,7 @@ exports.suivreBoycott = async (req, res, next) => {
 //Pour recuperer tous les boycotts
 exports.getTousBoycotts = async(req, res, next) =>{
     Boycott.find()
-    .populate("followers")
+    
     .then(boycotts => {
       if(boycotts.length > 0){
         res.status(200).json(boycotts);
@@ -124,6 +124,7 @@ exports.getTousBoycotts = async(req, res, next) =>{
 //Pour recuperer un boycott
 exports.getBoycott = async(req, res, next) =>{
     Boycott.findById(req.params.id)
+    .populate("followers")
     .then(boycott => {
       if(boycott){
         res.status(200).json(boycott);
