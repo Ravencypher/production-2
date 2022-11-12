@@ -105,6 +105,7 @@ exports.suivreBoycott = async (req, res, next) => {
 //Pour recuperer tous les boycotts
 exports.getTousBoycotts = async(req, res, next) =>{
     Boycott.find()
+    .populate("followers")
     .then(boycotts => {
       if(boycotts.length > 0){
         res.status(200).json(boycotts);
