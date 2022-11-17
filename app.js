@@ -9,7 +9,7 @@ const app = express();
 dotenv.config();
 
 //middleware qui permet de convertir les input encodés a la req
-app.use(express.urlencoded({extend : true}));
+//app.use(express.urlencoded({extended : true}));
 //converti en jason
 app.use(express.json());
 
