@@ -22,8 +22,9 @@ exports.ajouterUtilisateur = async (req, res, next) => {
           isAdmin: req.body.isAdmin
         });        
         return utilisateur.save();
+
       }).then(result => {
-        const confirmationUrl = `http://localhost:3000/confirmation/`
+       const confirmationUrl = `http://localhost:3000/confirmation/`
         nodemailer.sendEmail(result.pseudo, result.email, confirmationUrl + result._id);
           res.status(201).json({ 
             message: 'Utilisateur créé !', 
@@ -31,7 +32,6 @@ exports.ajouterUtilisateur = async (req, res, next) => {
           });           
       })
       .catch (error=> {
-
         if(!error.statusCode){
           res.status(500).json(error);
         }                
