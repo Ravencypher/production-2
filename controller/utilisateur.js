@@ -24,7 +24,7 @@ exports.ajouterUtilisateur = async (req, res, next) => {
         return utilisateur.save();
       }).then(result => {
         const confirmationUrl = `http://localhost:3000/confirmation/`
-        nodemailer.sendEmail(req.body.pseudo, req.body.email, confirmationUrl + result._id);
+        nodemailer.sendEmail(result.pseudo, result.email, confirmationUrl + result._id);
           res.status(201).json({ 
             message: 'Utilisateur créé !', 
             utilisateurId: result._id 
