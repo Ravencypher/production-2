@@ -1,5 +1,4 @@
 const Boycott = require("../model/boycott");
-const UtilisateurBoycottJunction = require("../model/UtilisateurBoycottJunction");
 const boycott = require("../model/boycott");
 const utilisateur = require("../model/utilisateur");
 const { ObjectID } = require("bson");
@@ -33,23 +32,17 @@ exports.ajouterBoycott = async (req, res, next) => {
       if(data.status === "success"){
         const boycott = new Boycott({
         titre: req.body.titre,
+        idUtilisateur: new ObjectID(req.body.idUtilisateur),
         image: data.filename,
         resume: req.body.resume,
         description: req.body.description
       })
       return boycott.save()
         .then(result => {
-            let utilisateurBoycott = new UtilisateurBoycottJunction ({
-                idBoycott: result._id,
-                idUtilisateur: new ObjectID(req.body.idUtilisateur),           
+            res.status(200).json({ 
+              message: 'Boycott créé !', 
+              idBoycott: result._id
             });
-            utilisateurBoycott.save()
-        .then(result => {
-                res.status(200).json({ 
-                  message: 'Boycott créé !', 
-                  idBoycott: result.idBoycott
-                });
-            })
         })              
         .catch (error=> {
           if(!error.statusCode){
@@ -141,19 +134,20 @@ exports.getBoycott = async(req, res, next) =>{
 
 //Afficher l'utilisateur d'un boycott 
 exports.getBoycottUtilisateur = async(req, res, next) =>{
-  UtilisateurBoycottJunction.findOne({idBoycott: req.params.id})
-  .then(Junction => {
-    if(Junction){
-      //console.log(Junctions);
-      //console.log(Junctions.map(j => j.idBoycott));
-      // Map extrait l'id de boycott de la jonction
-      // $in sert à filtrer toute les _id qui sont à l'intérieur du tableau d'id;
-      utilisateur.findOne({ _id : Junction.idUtilisateur})
-      .then(Utilisateur => {
-        res.status(200).json(Utilisateur);
+  Boycott.findById(req.params.id)
+  .then(boycott => {
+    if(boycott){
+      utilisateur.findById(boycott.idUtilisateur)
+      .then(utilisateur => {
+        if(utilisateur){
+          res.status(200).json(utilisateur);
+        }
+        else {
+          res.status(404).json({msg:"Ce boycott n'a aucun utilisateur"});
+        }
       })      
     }else{
-      res.status(404).json({msg:"Ce boycott n'a aucun utilisateur"});
+      res.status(404).json({msg:"Aucun boycott trouvé"});
     }
   })
   .catch (error=> {
@@ -161,7 +155,7 @@ exports.getBoycottUtilisateur = async(req, res, next) =>{
       res.status(500).json(error);
     }                
     next(error)
-  });  
+  });
 }, 
 
 //Pour modifier un boycott
