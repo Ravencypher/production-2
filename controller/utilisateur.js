@@ -5,12 +5,14 @@ const dotenv = require('dotenv');
 dotenv.config();
 const {ObjectID} = require("bson");
 const boycott = require("../model/boycott");
-const UtilisateurBoycottJunction = require("../model/UtilisateurBoycottJunction");
+const nodemailer = require("../configuration/nodemailer")
 
 //Pour ajouter un utilisateur //signup
 exports.ajouterUtilisateur = async (req, res, next) => {          
   bcrypt.hash(req.body.password, 12)
+  
     .then(hashedPw => {
+      
         const utilisateur = new Utilisateur({
           pseudo: req.body.pseudo,
           email: req.body.email,
@@ -20,14 +22,16 @@ exports.ajouterUtilisateur = async (req, res, next) => {
           isAdmin: req.body.isAdmin
         });        
         return utilisateur.save();
+
       }).then(result => {
+       const confirmationUrl = `http://localhost:3000/confirmation/`
+        nodemailer.sendEmail(result.pseudo, result.email, confirmationUrl + result._id);
           res.status(201).json({ 
             message: 'Utilisateur créé !', 
             utilisateurId: result._id 
           });           
       })
       .catch (error=> {
-
         if(!error.statusCode){
           res.status(500).json(error);
         }                
@@ -38,6 +42,7 @@ exports.ajouterUtilisateur = async (req, res, next) => {
 //Pour recuperer tous les utilisateurs
 exports.getTousUtilisateurs = async(req, res, next) =>{
     Utilisateur.find()
+    .select("-password -email")
     .then(utilisateurs => {
       if(utilisateurs.length > 0){
         res.status(200).json(utilisateurs);
@@ -55,6 +60,7 @@ exports.getTousUtilisateurs = async(req, res, next) =>{
 //Pour recuperer un utilisateur 
  exports.getUtilisateur = async(req, res, next) =>{
     Utilisateur.findById(req.params.id)
+    .select("-password -email")
     .then(utilisateur => {
       if(utilisateur){
         res.status(200).json(utilisateur);
@@ -72,17 +78,10 @@ exports.getTousUtilisateurs = async(req, res, next) =>{
 
   //Pour recuperer tous les boycotts d'un utilisateur 
  exports.getUtilisateurBoycotts = async(req, res, next) =>{
-  UtilisateurBoycottJunction.find({idUtilisateur: req.params.id})
-  .then(Junctions => {
-    if(Junctions.length > 0){      
-      //console.log(Junctions);
-      //console.log(Junctions.map(j => j.idBoycott));
-      // Map extrait l'id de boycott de la jonction
-      // $in sert à filtrer toute les _id qui sont à l'intérieur du tableau d'id;
-      boycott.find({ _id : { $in : Junctions.map(j => j.idBoycott)}})
-      .then(Boycotts => {
-        res.status(200).json(Boycotts);
-      })      
+  boycott.find({idUtilisateur: req.params.id})
+  .then(Boycotts => {    
+    if(Boycotts.length > 0){      
+      res.status(200).json(Boycotts);  
     }else{
       res.status(404).json({msg:"Cet utilisateur n'a aucun boycott"});
     }
