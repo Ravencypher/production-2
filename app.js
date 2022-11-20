@@ -27,6 +27,11 @@ app.use("/api/v1", routesUtilisateur)
 app.use("/api/v1", routesBoycott)
 app.use("/api/v1", routesAuth)
 
+const cors = require('cors');
+app.use(cors({
+    origin: '*'
+}));
+
 const PORT = process.env.PORT || 3000;
 mongoose
   .connect(process.env.MONGODB)
