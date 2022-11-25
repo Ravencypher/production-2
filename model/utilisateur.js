@@ -25,6 +25,11 @@ const utilisateurSchema = new Schema({
   isAdmin: {
     type: Boolean,
     required: true
+  },
+  status: {
+    type: String, 
+    enum: ['En attente', 'Active'],
+    default: 'En attente'
   }
 },
   { timestamps: true }

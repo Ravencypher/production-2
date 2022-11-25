@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 const {ObjectID} = require("bson");
 const boycott = require("../model/boycott");
-const nodemailer = require("../configuration/nodemailer")
+const nodemailer = require("../configuration/nodemailer");
 
 //Pour ajouter un utilisateur //signup
 exports.ajouterUtilisateur = async (req, res, next) => {          
@@ -21,15 +21,28 @@ exports.ajouterUtilisateur = async (req, res, next) => {
           ville: req.body.ville,                   
           isAdmin: req.body.isAdmin
         });        
-        return utilisateur.save();
-
+        return utilisateur.save((err) => {
+          if (err) {
+            res.status(500).json({ message: "erreur"});
+                 return;
+              }
+             res.json({
+                 message:
+                   "L'utilisateur a été enregistré avec succès! S'il vous plaît, vérifier vos emails! ",
+              });
       }).then(result => {
        const confirmationUrl = `http://localhost:3000/confirmation/`
         nodemailer.sendEmail(result.pseudo, result.email, confirmationUrl + result._id);
-          res.status(201).json({ 
+         /*  res.status(201).json({ 
             message: 'Utilisateur créé !', 
-            utilisateurId: result._id 
-          });           
+            utilisateurId: result._id  
+          });*/           
+      }).then (utilisateur =>{
+        if (utilisateur.status != "Active"){
+        return res.status(401).json({
+          message: "Attente de confirmation. S'il vous plaît, vérifier vos emails!",
+        });
+      }
       })
       .catch (error=> {
         if(!error.statusCode){
@@ -37,8 +50,15 @@ exports.ajouterUtilisateur = async (req, res, next) => {
         }                
         next(error)
       });
-          
-}
+})
+  } 
+  //Pour filtrer par pays et par ville
+  exports.flitrerInfo(req, res) => {
+    const ville = req.body.ville;
+    const pays = req.body.pays;
+    console.log(data.ville, data.pays);
+  }   
+
 //Pour recuperer tous les utilisateurs
 exports.getTousUtilisateurs = async(req, res, next) =>{
     Utilisateur.find()
