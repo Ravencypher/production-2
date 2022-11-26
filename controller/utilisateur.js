@@ -19,17 +19,16 @@ exports.ajouterUtilisateur = async (req, res, next) => {
           password: hashedPw,
           pays: req.body.pays, 
           ville: req.body.ville,                   
-          isAdmin: req.body.isAdmin
+          isAdmin: req.body.isAdmin,
+          confirmationCode: token
         });        
         return utilisateur.save((err) => {
-          if (err) {
-            res.status(500).json({ message: "erreur"});
-                 return;
-              }
-             res.json({
-                 message:
-                   "L'utilisateur a été enregistré avec succès! S'il vous plaît, vérifier vos emails! ",
-              });
+          if (utilisateur.status != "Active") {
+            return res.status(401).send({
+              message: "En attente. Vérifier vos emails!",
+            })
+
+            }
       }).then(result => {
        const confirmationUrl = `http://localhost:3000/confirmation/`
         nodemailer.sendEmail(result.pseudo, result.email, confirmationUrl + result._id);
@@ -47,6 +46,26 @@ exports.ajouterUtilisateur = async (req, res, next) => {
       });
 })
   } 
+  //Pour vérifier dans la base de donnée et changer le statut Attente en Active
+  exports.verifyUtilisateur = (req, res, next) => {
+    Utilisateur.findOne({
+      confirmationCode: req.params.confirmationCode,
+    })
+      .then((utilisateur) => {
+        if (!utilisateur) {
+          return res.status(404).send({ message: "Utilisateur non trouvé." });
+        }
+  
+        utilisateur.status = "Active";
+        utilisateur.save((err) => {
+          if (err) {
+            res.status(500).send({ message: err });
+            return;
+          }
+        });
+      })
+      .catch((e) => console.log("error", e));
+  };
   //Pour filtrer par pays et par ville
   exports.filtrerInfo = async (req, res, next) => {
     const filtreVille = req.query.ville;

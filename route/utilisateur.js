@@ -3,7 +3,7 @@ const controller = require('../controller/utilisateur');
 const authController = require('../middleware/is-auth');
 const router = express.Router();
 
-router.post("/signup", controller.ajouterUtilisateur);
+router.post("/signup", controller.ajouterUtilisateur,controller.verifyUtilisateur);
 router.get("/utilisateurs", authController, controller.getTousUtilisateurs);
 router.get("/utilisateur/:id", authController, controller.getUtilisateur);
 router.get("/utilisateur/:id/Boycotts", authController, controller.getUtilisateurBoycotts);
