@@ -33,16 +33,11 @@ exports.ajouterUtilisateur = async (req, res, next) => {
       }).then(result => {
        const confirmationUrl = `http://localhost:3000/confirmation/`
         nodemailer.sendEmail(result.pseudo, result.email, confirmationUrl + result._id);
-         /*  res.status(201).json({ 
+           res.status(201).json({ 
             message: 'Utilisateur créé !', 
             utilisateurId: result._id  
-          });*/           
-      }).then (utilisateur =>{
-        if (utilisateur.status != "Active"){
-        return res.status(401).json({
-          message: "Attente de confirmation. S'il vous plaît, vérifier vos emails!",
-        });
-      }
+          });           
+  
       })
       .catch (error=> {
         if(!error.statusCode){
@@ -53,12 +48,13 @@ exports.ajouterUtilisateur = async (req, res, next) => {
 })
   } 
   //Pour filtrer par pays et par ville
-  exports.flitrerInfo(req, res) => {
-    const ville = req.body.ville;
-    const pays = req.body.pays;
-    console.log(data.ville, data.pays);
-  }   
-
+  exports.filtrerInfo = async (req, res, next) => {
+    const filtreVille = req.query.ville;
+    const filtrePays = req.query.pays;
+    const filtreUtilisateurs = data.filter(utilisateurs => { utilisateurs.filtreVille, utilisateurs.filtrePays
+  })
+    res.send(filtreUtilisateurs);
+};  
 //Pour recuperer tous les utilisateurs
 exports.getTousUtilisateurs = async(req, res, next) =>{
     Utilisateur.find()

@@ -26,11 +26,7 @@ const utilisateurSchema = new Schema({
     type: Boolean,
     required: true
   },
-  status: {
-    type: String, 
-    enum: ['En attente', 'Active'],
-    default: 'En attente'
-  }
+  
 },
   { timestamps: true }
 );
