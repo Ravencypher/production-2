@@ -42,7 +42,7 @@ exports.ajouterUtilisateur = async (req, res, next) => {
 //Pour recuperer tous les utilisateurs
 exports.getTousUtilisateurs = async(req, res, next) =>{
     Utilisateur.find()
-    .select("-password -email")
+    .select("-password")
     .then(utilisateurs => {
       if(utilisateurs.length > 0){
         res.status(200).json(utilisateurs);
@@ -60,7 +60,7 @@ exports.getTousUtilisateurs = async(req, res, next) =>{
 //Pour recuperer un utilisateur 
  exports.getUtilisateur = async(req, res, next) =>{
     Utilisateur.findById(req.params.id)
-    .select("-password -email")
+    .select("-password")
     .then(utilisateur => {
       if(utilisateur){
         res.status(200).json(utilisateur);
