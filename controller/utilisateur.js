@@ -7,6 +7,7 @@ dotenv.config();
 const {ObjectID} = require("bson");
 const boycott = require("../model/boycott");
 const nodemailer = require("../configuration/nodemailer");
+const utilisateur = require("../model/utilisateur");
 
 //Pour ajouter un utilisateur //signup
 exports.ajouterUtilisateur = async (req, res, next) => {     
@@ -65,12 +66,18 @@ exports.ajouterUtilisateur = async (req, res, next) => {
   };
   //Pour filtrer par pays et par ville
   exports.filtrerInfo = async (req, res, next) => {
-    const filtreVille = req.query.ville;
-    const filtrePays = req.query.pays;
-    const filtreUtilisateurs = data.filter(utilisateurs => { utilisateurs.filtreVille, utilisateurs.filtrePays
-  })
-    res.send(filtreUtilisateurs);
-};  
+    const recherche ={ville: req.query.ville,
+                      pays: req.query.pays}
+
+                   Utilisateur.find(recherche)
+                   .then(recherche=>{
+                    utilisateur.filter("ville", ville),
+                    utilisateur.filter("pays", pays)
+                   })
+                   .catch(error =>{           
+                       console.log(error);});   
+           };
+                     
 //Pour recuperer tous les utilisateurs
 exports.getTousUtilisateurs = async(req, res, next) =>{
     Utilisateur.find()
