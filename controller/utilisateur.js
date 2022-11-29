@@ -1,6 +1,7 @@
 const Utilisateur = require("../model/utilisateur");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const uuidv4 = require("uuid")
 const dotenv = require('dotenv');
 dotenv.config();
 const {ObjectID} = require("bson");
@@ -8,11 +9,12 @@ const boycott = require("../model/boycott");
 const nodemailer = require("../configuration/nodemailer");
 
 //Pour ajouter un utilisateur //signup
-exports.ajouterUtilisateur = async (req, res, next) => {          
+exports.ajouterUtilisateur = async (req, res, next) => {     
+  const token = uuidv4.v4(); 
   bcrypt.hash(req.body.password, 12)
   
     .then(hashedPw => {
-      
+
         const utilisateur = new Utilisateur({
           pseudo: req.body.pseudo,
           email: req.body.email,
@@ -22,16 +24,11 @@ exports.ajouterUtilisateur = async (req, res, next) => {
           isAdmin: req.body.isAdmin,
           confirmationCode: token
         });        
-        return utilisateur.save((err) => {
-          if (utilisateur.status != "Active") {
-            return res.status(401).send({
-              message: "En attente. Vérifier vos emails!",
-            })
-
-            }
-      }).then(result => {
-       const confirmationUrl = `http://localhost:3000/confirmation/`
-        nodemailer.sendEmail(result.pseudo, result.email, confirmationUrl + result._id);
+        return utilisateur.save()
+        .then(result => {
+       const confirmationUrl = `http://localhost:5173/confirmation/${token}`
+       console.log(token);
+        nodemailer.sendEmail(result.pseudo, result.email, confirmationUrl);
            res.status(201).json({ 
             message: 'Utilisateur créé !', 
             utilisateurId: result._id  
@@ -47,7 +44,7 @@ exports.ajouterUtilisateur = async (req, res, next) => {
 })
   } 
   //Pour vérifier dans la base de donnée et changer le statut Attente en Active
-  exports.verifyUtilisateur = (req, res, next) => {
+  exports.verifyUtilisateur = (req, res, next) => {    
     Utilisateur.findOne({
       confirmationCode: req.params.confirmationCode,
     })
@@ -55,7 +52,7 @@ exports.ajouterUtilisateur = async (req, res, next) => {
         if (!utilisateur) {
           return res.status(404).send({ message: "Utilisateur non trouvé." });
         }
-  
+        console.log(utilisateur);
         utilisateur.status = "Active";
         utilisateur.save((err) => {
           if (err) {
