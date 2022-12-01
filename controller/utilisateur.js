@@ -66,17 +66,27 @@ exports.ajouterUtilisateur = async (req, res, next) => {
   };
   //Pour filtrer par pays et par ville
   exports.filtrerInfo = async (req, res, next) => {
-    const recherche ={ville: req.query.ville,
-                      pays: req.query.pays}
-
-                   Utilisateur.find(recherche)
-                   .then(recherche=>{
-                    utilisateur.filter("ville", ville),
-                    utilisateur.filter("pays", pays)
-                   })
-                   .catch(error =>{           
-                       console.log(error);});   
-           };
+    const recherche ={
+      $or: [
+        {ville: req.query.ville},
+        {pays: req.query.pays}
+      ]
+      }
+      Utilisateur.find(recherche)
+      .then(utilisateurs => {
+      if(utilisateurs.length > 0){
+        res.status(200).json(utilisateurs);
+      }else{
+        res.status(404).json({msg:"Aucun utilisateur trouvé"});
+      }
+    })
+    .catch (error=> {
+      if(!error.statusCode){
+        res.status(500).json(error);
+      }                
+      next(error)
+    }); 
+  } 
                      
 //Pour recuperer tous les utilisateurs
 exports.getTousUtilisateurs = async(req, res, next) =>{
