@@ -154,18 +154,21 @@ exports.getUtilisateurLogin= (req, res, next) => {
     Utilisateur.findOne({ email: email })
       .then(utilisateur => {
         if (!utilisateur) {
-          const error = new Error('Utilisateur non trouvé');
-          error.statusCode = 401;
-          throw error;
+          res.status(401).json({ message: 'Utilisateur non trouvé' });
+          return;
         }
         loadedUtilisateur = utilisateur;
         return bcrypt.compare(password, utilisateur.password);
       })
       .then(isEqual => {
         if (!isEqual) {
-          const error = new Error('Mot de passe incorrect');
-          error.statusCode = 401;
-          throw error;
+          res.status(401).json({ message: 'Mot de passe incorrect' });
+          return;
+        }
+        if(loadedUtilisateur.status == 'En attente')
+        {
+          res.status(401).json({ message: 'Courriel non validé.  Veuillez valider votre courriel' });
+          return;
         }
         const token = jwt.sign(
           {
