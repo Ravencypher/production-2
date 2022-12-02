@@ -1,35 +1,40 @@
 const Utilisateur = require("../model/utilisateur");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const uuidv4 = require("uuid")
 const dotenv = require('dotenv');
 dotenv.config();
 const {ObjectID} = require("bson");
 const boycott = require("../model/boycott");
-const nodemailer = require("../configuration/nodemailer")
+const nodemailer = require("../configuration/nodemailer");
+const utilisateur = require("../model/utilisateur");
 
 //Pour ajouter un utilisateur //signup
-exports.ajouterUtilisateur = async (req, res, next) => {          
+exports.ajouterUtilisateur = async (req, res, next) => {     
+  const token = uuidv4.v4(); 
   bcrypt.hash(req.body.password, 12)
   
     .then(hashedPw => {
-      
+
         const utilisateur = new Utilisateur({
           pseudo: req.body.pseudo,
           email: req.body.email,
           password: hashedPw,
           pays: req.body.pays, 
           ville: req.body.ville,                   
-          isAdmin: req.body.isAdmin
+          isAdmin: req.body.isAdmin,
+          confirmationCode: token
         });        
-        return utilisateur.save();
-
-      }).then(result => {
-       const confirmationUrl = `http://localhost:3000/confirmation/`
-        nodemailer.sendEmail(result.pseudo, result.email, confirmationUrl + result._id);
-          res.status(201).json({ 
+        return utilisateur.save()
+        .then(result => {
+       const confirmationUrl = `http://localhost:5173/confirmation/${token}`
+       console.log(token);
+        nodemailer.sendEmail(result.pseudo, result.email, confirmationUrl);
+           res.status(201).json({ 
             message: 'Utilisateur créé !', 
-            utilisateurId: result._id 
+            utilisateurId: result._id  
           });           
+  
       })
       .catch (error=> {
         if(!error.statusCode){
@@ -37,8 +42,52 @@ exports.ajouterUtilisateur = async (req, res, next) => {
         }                
         next(error)
       });
-          
-}
+})
+  } 
+  //Pour vérifier dans la base de donnée et changer le statut Attente en Active
+  exports.verifyUtilisateur = (req, res, next) => {    
+    Utilisateur.findOne({
+      confirmationCode: req.params.confirmationCode,
+    })
+      .then((utilisateur) => {
+        if (!utilisateur) {
+          return res.status(404).send({ message: "Utilisateur non trouvé." });
+        }
+        console.log(utilisateur);
+        utilisateur.status = "Active";
+        utilisateur.save((err) => {
+          if (err) {
+            res.status(500).send({ message: err });
+            return;
+          }
+        });
+      })
+      .catch((e) => console.log("error", e));
+  };
+  //Pour filtrer par pays et par ville
+  exports.filtrerInfo = async (req, res, next) => {
+    const recherche ={
+      $or: [
+        {ville: req.query.ville},
+        {pays: req.query.pays}
+      ]
+      }
+      Utilisateur.find(recherche)
+      .then(utilisateurs => {
+      if(utilisateurs.length > 0){
+        res.status(200).json(utilisateurs);
+      }else{
+        res.status(404).json({msg:"Aucun utilisateur trouvé"});
+      }
+    })
+    .catch (error=> {
+      if(!error.statusCode){
+        res.status(500).json(error);
+      }                
+      next(error)
+    }); 
+  } 
+                     
 //Pour recuperer tous les utilisateurs
 exports.getTousUtilisateurs = async(req, res, next) =>{
     Utilisateur.find()
@@ -115,18 +164,21 @@ exports.getUtilisateurLogin= (req, res, next) => {
     Utilisateur.findOne({ email: email })
       .then(utilisateur => {
         if (!utilisateur) {
-          const error = new Error('Utilisateur non trouvé');
-          error.statusCode = 401;
-          throw error;
+          res.status(401).json({ message: 'Utilisateur non trouvé' });
+          return;
         }
         loadedUtilisateur = utilisateur;
         return bcrypt.compare(password, utilisateur.password);
       })
       .then(isEqual => {
         if (!isEqual) {
-          const error = new Error('Mot de passe incorrect');
-          error.statusCode = 401;
-          throw error;
+          res.status(401).json({ message: 'Mot de passe incorrect' });
+          return;
+        }
+        if(loadedUtilisateur.status == 'En attente')
+        {
+          res.status(401).json({ message: 'Courriel non validé.  Veuillez valider votre courriel' });
+          return;
         }
         const token = jwt.sign(
           {
