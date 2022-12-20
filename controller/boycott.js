@@ -53,7 +53,7 @@ exports.ajouterBoycott = async (req, res, next) => {
       }
     })
   },
-
+//Suivre un boycott
 exports.suivreBoycott = async (req, res, next) => {
   const id = new ObjectID(req.params.id);
   const idUtilisateur = new ObjectID(req.body.idUtilisateur);
@@ -94,7 +94,47 @@ exports.suivreBoycott = async (req, res, next) => {
     next(error)
   });
 }
+//Signaler un boycott / Alerte
+exports.alerteBoycott = async (req, res, next) => {
+  const id = new ObjectID(req.params.id);
+  const idUtilisateur = new ObjectID(req.body.idUtilisateur);
 
+  Boycott.findById(id)
+  .then(boycott => {
+    if(boycott){
+      if(boycott.alert.includes(idUtilisateur)){
+        res.status(202).json({msg : "Alerte sur ce boycott"});  
+      }
+      else{
+        boycott.alert.push(idUtilisateur);
+      
+        Boycott.updateOne({_id : id},
+          {$set : {alert : boycott.alert}}
+          )
+          .then(id =>{
+            if(id.modifiedCount == 1){
+                res.status(200).json({msg : "Ce boycott a été signalé"});   
+            }else{
+                res.status(404).json({msg : "Ce boycott n'existe pas"});
+            }
+          })
+          .catch(error =>{
+              console.log(error);
+              res.status(500).json(error);
+           });
+      }
+
+    }else{
+      res.status(404).json({msg:"Aucun boycott trouvé"});
+    }
+  })
+  .catch (error=> {
+    if(!error.statusCode){
+      res.status(500).json(error);
+    }                
+    next(error)
+  });
+}
 //Pour recuperer tous les boycotts
 exports.getTousBoycotts = async(req, res, next) =>{
     Boycott.find()    

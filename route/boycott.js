@@ -9,6 +9,7 @@ router.get("/boycotts", controller.getTousBoycotts);
 router.get("/boycott/:id", controller.getBoycott);
 router.get("/boycott/:id/utilisateur", authController, controller.getBoycottUtilisateur);
 router.post("/boycott/:id/suivre", authController, controller.suivreBoycott);
+router.post("/boycott/:id/alerte", authController, controller.alerteBoycott);
 router.put("/boycott/:id", authController, controller.modifierBoycott);
 router.delete("/boycott/:id", authController, controller.supprimerBoycott);
 

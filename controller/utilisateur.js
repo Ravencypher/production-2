@@ -10,8 +10,8 @@ const nodemailer = require("../configuration/nodemailer");
 const utilisateur = require("../model/utilisateur");
 
 //Pour ajouter un utilisateur //signup
-exports.ajouterUtilisateur = async (req, res, next) => {     
-  const token = uuidv4.v4(); 
+exports.ajouterUtilisateur = async (req, res, next) => {
+const token = uuidv4.v4(); 
   bcrypt.hash(req.body.password, 12)
   
     .then(hashedPw => {
