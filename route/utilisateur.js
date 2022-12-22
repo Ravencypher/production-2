@@ -7,6 +7,7 @@ router.post("/signup", controller.ajouterUtilisateur);
 router.get("/verify/:confirmationCode", controller.verifyUtilisateur);
 router.get("/utilisateurs", authController, controller.getTousUtilisateurs);
 router.get("/utilisateur/:id", authController, controller.getUtilisateur);
+router.post("/admin", controller.postAdminLogin);
 router.get("/utilisateur/:id/Boycotts", authController, controller.getUtilisateurBoycotts);
 router.get("/utilisateur/:id/BoycottsSuivis", authController, controller.getUtilisateurBoycottsSuivis);
 router.get("/utilisateurs/recherche", controller.filtrerInfo); 
